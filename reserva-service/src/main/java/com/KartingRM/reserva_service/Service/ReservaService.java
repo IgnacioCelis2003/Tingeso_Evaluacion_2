@@ -7,6 +7,7 @@ import com.KartingRM.reserva_service.Repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,6 +21,9 @@ public class ReservaService {
 
     @Autowired
     private ComprobanteService comprobanteService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public List<ReservaEntity> getReservas(){
         return reservaRepository.findAll();
@@ -115,7 +119,7 @@ public class ReservaService {
 
         reservaRepository.save(reserva);
 
-
+        restTemplate.postForObject("http://localhost:8080/clienteFrecuente/register/" + rut + "/" + fechaInicioStr, null, void.class);
 
         // Crear el comprobante
         ComprobanteEntity comprobante = comprobanteService.crearComprobante(reserva.getId(), nombre + " " + apellidoPaterno + " " + apellidoMaterno);

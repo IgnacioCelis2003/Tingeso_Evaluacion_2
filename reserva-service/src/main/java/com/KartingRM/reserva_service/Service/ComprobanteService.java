@@ -19,6 +19,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayOutputStream;
 import java.time.DayOfWeek;
@@ -44,6 +45,9 @@ public class ComprobanteService {
 
     @Autowired
     private RestTemplateConfig restTemplateConfig;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
 
     public byte[] generarPDFComprobante(ComprobanteEntity comprobante, ReservaEntity reserva) {
@@ -120,7 +124,6 @@ public class ComprobanteService {
             throw new RuntimeException("La reserva no existe");
         }
         int tipo = reserva.getTipo();
-        float tarifa = 0;
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime fechaInicio = LocalDateTime.parse(reserva.getFechaInicio(), formato);
 
@@ -128,56 +131,19 @@ public class ComprobanteService {
         String fechaInicioMesDia = fechaInicio.format(formatoMesDia);
         List<String> feriados = Arrays.asList("01-01", "05-01", "09-18", "09-19", "12-25");
 
-        String urlTarifa = "http://localhost:8080/tarifa/tipo/" + tipo;
+        float tarifa = restTemplate.getForObject("http://localhost:8080/tarifa/" + tipo, float.class);
+        float tarifaEspecial = restTemplate.getForObject("http://localhost:8080/tarifaEspecial/calcular/" + tarifa + "/" + reserva.getFechaInicio(), float.class);
 
-        //float precioTarifa = restTemplateConfig.getForObject(urlTarifa, float.class);
-
-        switch (tipo) {
-            case 1:
-                if(fechaInicio.getDayOfWeek() == DayOfWeek.SATURDAY || fechaInicio.getDayOfWeek() == DayOfWeek.SUNDAY || feriados.contains(fechaInicioMesDia)
-                || reserva.getTarifaEspecial() != 0) {
-                    if (reserva.getTarifaEspecial() != 0) {
-                        tarifa = 15000 + reserva.getTarifaEspecial();
-                    }
-                    else {
-                        tarifa = 15000 + (15000 * 0.25f);
-                    }
-                } else {
-                    tarifa = 15000;
-                }
-                break;
-            case 2:
-                if(fechaInicio.getDayOfWeek() == DayOfWeek.SATURDAY || fechaInicio.getDayOfWeek() == DayOfWeek.SUNDAY || feriados.contains(fechaInicioMesDia)
-                        || reserva.getTarifaEspecial() != 0) {
-                    if (reserva.getTarifaEspecial() != 0) {
-                        tarifa = 20000 + reserva.getTarifaEspecial();
-                    }
-                    else {
-                        tarifa = 20000 + (20000 * 0.25f);
-                    }
-                } else {
-                    tarifa = 20000;
-                }
-                break;
-            case 3:
-                if(fechaInicio.getDayOfWeek() == DayOfWeek.SATURDAY || fechaInicio.getDayOfWeek() == DayOfWeek.SUNDAY || feriados.contains(fechaInicioMesDia)
-                        || reserva.getTarifaEspecial() != 0) {
-                    if (reserva.getTarifaEspecial() != 0) {
-                        tarifa = 25000 + reserva.getTarifaEspecial();
-                    }
-                    else {
-                        tarifa = 25000 + (25000 * 0.25f);
-                    }
-                } else {
-                    tarifa = 25000;
-                }
-                break;
-            default:
-                throw new RuntimeException("Tipo de reserva no válido");
-
+        if(tarifa != tarifaEspecial) {
+            tarifa = tarifaEspecial;
         }
+        if(reserva.getTarifaEspecial() != 0) {
+            tarifa = tarifa + reserva.getTarifaEspecial();
+        }
+
         int cantidadPersonas = reserva.getCantidadPersonas();
         float montoInicial = tarifa * cantidadPersonas;
+
 
         //Calculos de descuentos
         List<Float> descuentos = new ArrayList<>();
@@ -185,60 +151,30 @@ public class ComprobanteService {
 
         //Por cantidad de personas
 
-        if(cantidadPersonas >= 3 && cantidadPersonas <= 5) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.1f));
-            descuentos.add(montoInicial * 0.1f);
-        }
-        else if(cantidadPersonas >= 6 && cantidadPersonas <= 10) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.2f));
-            descuentos.add(montoInicial * 0.2f);
-        }
-        else if (cantidadPersonas >= 11 && cantidadPersonas <= 15) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.3f));
-            descuentos.add(montoInicial * 0.3f);
-        }
+        float descuentoPorCantidadPersonas = restTemplate.getForObject("http://localhost:8080/descuentoGrupo/" + cantidadPersonas, float.class);
+
+        montosDescuentos.add(montoInicial - (montoInicial * descuentoPorCantidadPersonas));
+        descuentos.add(montoInicial * descuentoPorCantidadPersonas);
+
 
 
         //Por cantidad de reservas en el mes
 
-        List<ReservaEntity> reservasUsuario = reservaRepository.findByRut(reserva.getRut());
-        int cantidadReservasMes = 0;
-        DateTimeFormatter formatoAnioMes = DateTimeFormatter.ofPattern("yyyy-MM");
-        YearMonth anioMes = YearMonth.from(fechaInicio);
+        float descuentoPorReservas = restTemplate.getForObject("http://localhost:8080/clienteFrecuente/" + reserva.getRut() + "/" + reserva.getFechaInicio(), float.class);
 
-        for (ReservaEntity reservaUsuario : reservasUsuario) {
-            LocalDate fechaReservaFor = LocalDate.parse(reservaUsuario.getFechaInicio(), formato);
-            YearMonth anioMesReserva = YearMonth.from(fechaReservaFor);
+        montosDescuentos.add(montoInicial - (montoInicial * descuentoPorReservas));
+        descuentos.add(montoInicial * descuentoPorReservas);
 
-            if (anioMesReserva.equals(anioMes)) {
-                cantidadReservasMes++;
-            }
-        }
 
-        if(cantidadReservasMes >= 7) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.3f));
-            descuentos.add(montoInicial * 0.3f);
-        }
-        else if(cantidadReservasMes == 5 || cantidadReservasMes == 6) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.2f));
-            descuentos.add(montoInicial * 0.2f);
-        }
-        else if(cantidadReservasMes == 3 || cantidadReservasMes == 4 || cantidadReservasMes == 2) {
-            montosDescuentos.add(montoInicial - (montoInicial * 0.1f));
-            descuentos.add(montoInicial * 0.1f);
-        }
 
         //Por fecha de nacimiento
 
-        int personasCumple = reserva.getCantidadCumple();
-        if (personasCumple >= 1 && (cantidadPersonas >= 3 && cantidadPersonas <= 5)) {
-            montosDescuentos.add((tarifa * 0.5f) + (tarifa * (cantidadPersonas - 1)));
-            descuentos.add(tarifa * 0.5f);
-        }
-        if ((personasCumple >= 2) && (cantidadPersonas >= 6)) {
-            montosDescuentos.add((2*(tarifa * 0.5f)) + (tarifa * (cantidadPersonas - 2)));
-            descuentos.add(2*(tarifa * 0.5f));
-        }
+        float descuentoPorCumple = restTemplate.getForObject("http://localhost:8080/tarifaEspecial/descuento/" + reserva.getCantidadCumple() + "/" + cantidadPersonas + "/" + tarifa, float.class);
+
+        montosDescuentos.add(montoInicial - descuentoPorCumple);
+        descuentos.add(descuentoPorCumple);
+
+
 
         // Elegir descuento con mayor monto
 

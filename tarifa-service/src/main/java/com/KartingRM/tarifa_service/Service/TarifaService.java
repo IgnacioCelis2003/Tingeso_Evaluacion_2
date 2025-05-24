@@ -15,9 +15,9 @@ public class TarifaService {
     @PostConstruct
     public void initData() {
         if (tarifaRepository.count() == 0) {
-            tarifaRepository.save(new TarifaEntity(1, 15000, 30)); // Tarifa para 1 persona
-            tarifaRepository.save(new TarifaEntity(2, 20000, 35)); // Tarifa para 2 personas
-            tarifaRepository.save(new TarifaEntity(3, 25000, 40)); // Tarifa para 3 personas
+            tarifaRepository.save(new TarifaEntity(1, 15000, 10)); // Tarifa para 1 persona
+            tarifaRepository.save(new TarifaEntity(2, 20000, 15)); // Tarifa para 2 personas
+            tarifaRepository.save(new TarifaEntity(3, 25000, 20)); // Tarifa para 3 personas
             System.out.println("Datos cargados.");
         }
     }
