@@ -3,7 +3,6 @@ package com.KartingRM.reporte_service.Service;
 import com.KartingRM.reporte_service.DTO.ComprobanteDTO;
 import com.KartingRM.reporte_service.DTO.ReservaDTO;
 import com.KartingRM.reporte_service.RestTemplateConfig;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -45,7 +44,7 @@ public class ReporteService {
         return response.getBody();
     }
 
-    @Transactional
+
     public List<List<Double>> getReportePorTipo(String inicio, String fin) {
         if (inicio == null || fin == null) {
             throw new RuntimeException("Los valores no pueden ser nulos");
@@ -91,7 +90,7 @@ public class ReporteService {
         return reporteFinal;
     }
 
-    @Transactional
+
     public List<List<Double>> getReportePorCantidad(String inicio, String fin) {
         if (inicio == null || fin == null) {
             throw new RuntimeException("Los valores no pueden ser nulos");
