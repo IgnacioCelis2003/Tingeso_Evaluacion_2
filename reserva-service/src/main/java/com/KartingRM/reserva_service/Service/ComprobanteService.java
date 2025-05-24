@@ -185,6 +185,9 @@ public class ComprobanteService {
         //float montoDescuento = 0;
         //float descuento = 0;
 
+        System.out.println("Montos Descuentos: " + montosDescuentos);
+        System.out.println("Descuentos: " + descuentos);
+
 
         Collections.sort(montosDescuentos);
         Collections.sort(descuentos);
