@@ -36,7 +36,7 @@ public class ReservaController {
         return reservaService.getReservas();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ReservaEntity getReservaById(@PathVariable int id){
         return reservaService.getReservaById(id);
     }

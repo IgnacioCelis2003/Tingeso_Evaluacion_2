@@ -25,7 +25,7 @@ public class ReporteService {
 
 
     public ReservaDTO obtenerReserva(long id) {
-        String url = "http://localhost:8079/reserva/" + id;
+        String url = "http://localhost:8079/reserva/get/" + id;
         ResponseEntity<ReservaDTO> response = restTemplate.exchange(
                 url, HttpMethod.GET, null,
                 new ParameterizedTypeReference<ReservaDTO>() {
