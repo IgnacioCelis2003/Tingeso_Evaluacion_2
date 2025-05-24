@@ -164,7 +164,7 @@ public class ComprobanteService {
 
         //Por cantidad de reservas en el mes
 
-        float descuentoPorReservas = restTemplate.getForObject("http://localhost:8079/clienteFrecuente/" + reserva.getRut() + "/" + reserva.getFechaInicio(), float.class);
+        float descuentoPorReservas = restTemplate.getForObject("http://localhost:8079/clienteFrecuente/descuento/" + reserva.getRut() + "/" + reserva.getFechaInicio(), float.class);
 
         montosDescuentos.add(montoInicial - (montoInicial * descuentoPorReservas));
         descuentos.add(montoInicial * descuentoPorReservas);

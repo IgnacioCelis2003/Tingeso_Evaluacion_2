@@ -17,7 +17,7 @@ public class ClienteFrecuenteController {
         clienteFrecuenteService.registerClienteFrecuente(rut, fechaInicio);
     }
 
-    @GetMapping("/{rut}/{fechaInicio}")
+    @GetMapping("/descuento/{rut}/{fechaInicio}")
     public float getDescuentoFrecuente(@PathVariable String rut, @PathVariable String fechaInicio) {
         return clienteFrecuenteService.getDescuentoFrecuente(rut, fechaInicio);
     }
