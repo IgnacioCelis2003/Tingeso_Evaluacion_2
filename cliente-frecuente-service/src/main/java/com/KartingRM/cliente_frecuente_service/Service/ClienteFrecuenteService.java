@@ -5,6 +5,7 @@ import com.KartingRM.cliente_frecuente_service.Repository.ClienteFrecuenteReposi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -24,11 +25,18 @@ public class ClienteFrecuenteService {
         float reservasPorMes = 0;
         List<ClienteFrecuenteEntity> reservas = clienteFrecuenteRepository.findByRut(rut);
 
-        DateTimeFormatter formatoAnioMes = DateTimeFormatter.ofPattern("yyyy-MM");
-        YearMonth fechaInicioYM = YearMonth.parse(fechaInicio, formatoAnioMes);
+        // Formato completo para parsear fechaInicio
+        DateTimeFormatter formatoCompleto = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime fechaInicioDT = LocalDateTime.parse(fechaInicio, formatoCompleto);
+
+        // Extraemos YearMonth para comparar solo año y mes
+        YearMonth fechaInicioYM = YearMonth.from(fechaInicioDT);
 
         for(ClienteFrecuenteEntity clienteFrecuente : reservas) {
-            YearMonth fechaInicioReserva = YearMonth.parse(clienteFrecuente.getFechaInicio(), formatoAnioMes);
+            // Asumiendo que getFechaInicio() devuelve también con formato completo, igual parseamos
+            LocalDateTime fechaReservaDT = LocalDateTime.parse(clienteFrecuente.getFechaInicio(), formatoCompleto);
+            YearMonth fechaInicioReserva = YearMonth.from(fechaReservaDT);
+
             if(fechaInicioReserva.equals(fechaInicioYM)) {
                 reservasPorMes++;
             }
@@ -40,10 +48,11 @@ public class ClienteFrecuenteService {
         else if(reservasPorMes == 5 || reservasPorMes == 6) {
             reservasPorMes = 0.20f;
         }
-        else if(reservasPorMes == 3 || reservasPorMes == 4 || reservasPorMes == 2) {
+        else if(reservasPorMes == 2 || reservasPorMes == 3 || reservasPorMes == 4) {
             reservasPorMes = 0.10f;
         }
 
         return reservasPorMes;
     }
+
 }
