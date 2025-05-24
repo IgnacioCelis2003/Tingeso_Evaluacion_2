@@ -178,7 +178,7 @@ public class ComprobanteService {
         montosDescuentos.add(montoInicial - descuentoPorCumple);
         descuentos.add(descuentoPorCumple);
 
-
+        System.out.println(montoInicial);
 
         // Elegir descuento con mayor monto
 
