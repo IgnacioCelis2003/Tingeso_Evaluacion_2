@@ -29,6 +29,10 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
+    public ReservaEntity getReservaById(int id){
+        return reservaRepository.findById(id);
+    }
+
     @Transactional
     boolean isReservaPosible(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
 
@@ -119,7 +123,7 @@ public class ReservaService {
 
         reservaRepository.save(reserva);
 
-        restTemplate.postForObject("http://localhost:8080/clienteFrecuente/register/" + rut + "/" + fechaInicioStr, null, void.class);
+        restTemplate.postForObject("http://localhost:8079/clienteFrecuente/register/" + rut + "/" + fechaInicioStr, null, void.class);
 
         // Crear el comprobante
         ComprobanteEntity comprobante = comprobanteService.crearComprobante(reserva.getId(), nombre + " " + apellidoPaterno + " " + apellidoMaterno);
