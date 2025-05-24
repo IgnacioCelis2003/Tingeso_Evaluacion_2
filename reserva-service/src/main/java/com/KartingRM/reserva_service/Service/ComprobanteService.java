@@ -182,19 +182,17 @@ public class ComprobanteService {
 
         // Elegir descuento con mayor monto
 
-        float montoDescuento = 0;
-        float descuento = 0;
+        //float montoDescuento = 0;
+        //float descuento = 0;
 
-        if(!montosDescuentos.isEmpty() || !descuentos.isEmpty()) {
-            Collections.sort(montosDescuentos);
-            Collections.sort(descuentos);
 
-            descuento = descuentos.get(descuentos.size() - 1);
-            montoDescuento = montosDescuentos.get(0);
-        }
-        else {
-            montoDescuento = montoInicial;
-        }
+        Collections.sort(montosDescuentos);
+        Collections.sort(descuentos);
+
+        float descuento = descuentos.get(descuentos.size() - 1);
+        float montoDescuento = montosDescuentos.get(0);
+
+
 
         float IVA = montoDescuento * 0.19f;
         float montoTotal = montoDescuento + IVA;
