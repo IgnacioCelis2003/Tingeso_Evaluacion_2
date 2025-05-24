@@ -23,6 +23,7 @@ public class ClienteFrecuenteService {
 
     public float getDescuentoFrecuente(String rut, String fechaInicio) {
         float reservasPorMes = 0;
+        float descuento = 0;
         List<ClienteFrecuenteEntity> reservas = clienteFrecuenteRepository.findByRut(rut);
 
         // Formato completo para parsear fechaInicio
@@ -43,16 +44,16 @@ public class ClienteFrecuenteService {
         }
 
         if(reservasPorMes >= 7) {
-            reservasPorMes = 0.30f;
+            descuento = 0.30f;
         }
         else if(reservasPorMes == 5 || reservasPorMes == 6) {
-            reservasPorMes = 0.20f;
+            descuento = 0.20f;
         }
         else if(reservasPorMes == 2 || reservasPorMes == 3 || reservasPorMes == 4) {
-            reservasPorMes = 0.10f;
+            descuento = 0.10f;
         }
 
-        return reservasPorMes;
+        return descuento;
     }
 
 }
