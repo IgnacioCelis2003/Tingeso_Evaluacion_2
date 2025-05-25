@@ -71,7 +71,7 @@ public class ReporteService {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         for (ComprobanteDTO comprobante : comprobantes) {
             System.out.println(comprobante);
-            ReservaDTO reserva = obtenerReserva(comprobante.getId());
+            ReservaDTO reserva = obtenerReserva(comprobante.getIdReserva());
             if (reserva == null) {
                 throw new RuntimeException("La reserva no existe");
             }
@@ -117,7 +117,7 @@ public class ReporteService {
 
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         for (ComprobanteDTO comprobante : comprobantes) {
-            ReservaDTO reserva = obtenerReserva(comprobante.getId());
+            ReservaDTO reserva = obtenerReserva(comprobante.getIdReserva());
             if (reserva == null) {
                 throw new RuntimeException("La reserva no existe");
             }
