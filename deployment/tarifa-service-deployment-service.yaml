@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tarifa-service-deployment
+  labels:
+    app: tarifa-service # Etiqueta para este Deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tarifa-service # Selector para los Pods gestionados por este Deployment
+  template:
+    metadata:
+      labels:
+        app: tarifa-service # Etiqueta que tendrán los Pods
+    spec:
+      containers:
+        - name: tarifa-service
+          image: ignaciocelis2003/tarifa-service:latest # ¡REEMPLAZA con tu imagen y tag correctos!
+          # Si tu aplicación está configurada para server.port=0,
+          # el puerto real será dinámico. Eureka lo descubrirá.
+          # Puedes declarar un containerPort (ej. 8080, el default de Spring si no fuera 0)
+          # si tus probes apuntan a ese puerto fijo del actuador o si el actuador usa el puerto de la app.
+          # Si el actuador tiene un puerto de gestión diferente y fijo, usa ese para las probes.
+          ports:
+            - containerPort: 8080 # Puerto donde el actuador podría estar o el puerto base de la app
+          env:
+
+            # Variables de la base de datos (tomadas del ConfigMap y Secret)
+            - name: SPRING_DATASOURCE_URL # Spring Boot buscará esta variable
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: SPRING_DATASOURCE_URL_M1 # Clave específica para la BD de tarifas-service
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: SPRING_DATASOURCE_USERNAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tarifa-service # Nombre DNS para que otros servicios (como el Gateway) lo encuentren
+  labels:
+    app: tarifa-service # Etiqueta para este Service
+spec:
+  selector:
+    app: tarifa-service # Debe coincidir con la etiqueta de los Pods del Deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      # El Gateway se comunicará con tarifas-service:80 (o solo tarifas-service si usa Eureka lb)
+      targetPort: 8080
+  type: LoadBalancer

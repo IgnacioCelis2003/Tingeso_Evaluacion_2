@@ -5,7 +5,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka-server-service:8761/eureka/
 spring:
   cloud:
     gateway:
@@ -59,10 +59,10 @@ spring:
             - Path=/comprobante/**
 
         # M6: rack-pista-service (Controlador en /rack)
-        #- id: M6-rack-pista-service
-        #  uri: lb://rack-pista-service
-        #  predicates:
-        #    - Path=/rack/**
+        - id: M6-rack-pista-service
+          uri: lb://rack-service
+          predicates:
+            - Path=/rack/**
 
         # M7: reportes-service (Controlador en /reportes)
         - id: M7-reportes-service

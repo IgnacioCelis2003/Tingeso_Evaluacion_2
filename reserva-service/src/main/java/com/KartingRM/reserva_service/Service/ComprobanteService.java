@@ -135,8 +135,8 @@ public class ComprobanteService {
         String fechaInicioMesDia = fechaInicio.format(formatoMesDia);
         List<String> feriados = Arrays.asList("01-01", "05-01", "09-18", "09-19", "12-25");
 
-        float tarifa = restTemplate.getForObject("http://localhost:8079/tarifa/" + tipo, float.class);
-        float tarifaEspecial = restTemplate.getForObject("http://localhost:8079/tarifaEspecial/calcular/" + tarifa + "/" + reserva.getFechaInicio(), float.class);
+        float tarifa = restTemplate.getForObject("http://gateway-server-service:8079/tarifa/" + tipo, float.class);
+        float tarifaEspecial = restTemplate.getForObject("http://gateway-server-service:8079/tarifaEspecial/calcular/" + tarifa + "/" + reserva.getFechaInicio(), float.class);
 
         if(tarifa != tarifaEspecial) {
             tarifa = tarifaEspecial;
@@ -155,7 +155,7 @@ public class ComprobanteService {
 
         //Por cantidad de personas
 
-        float descuentoPorCantidadPersonas = restTemplate.getForObject("http://localhost:8079/descuentoGrupo/" + cantidadPersonas, float.class);
+        float descuentoPorCantidadPersonas = restTemplate.getForObject("http://gateway-server-service:8079/descuentoGrupo/" + cantidadPersonas, float.class);
 
         montosDescuentos.add(montoInicial - (montoInicial * descuentoPorCantidadPersonas));
         descuentos.add(montoInicial * descuentoPorCantidadPersonas);
@@ -164,7 +164,7 @@ public class ComprobanteService {
 
         //Por cantidad de reservas en el mes
 
-        float descuentoPorReservas = restTemplate.getForObject("http://localhost:8079/clienteFrecuente/descuento/" + reserva.getRut() + "/" + reserva.getFechaInicio(), float.class);
+        float descuentoPorReservas = restTemplate.getForObject("http://gateway-server-service:8079/clienteFrecuente/descuento/" + reserva.getRut() + "/" + reserva.getFechaInicio(), float.class);
 
         montosDescuentos.add(montoInicial - (montoInicial * descuentoPorReservas));
         descuentos.add(montoInicial * descuentoPorReservas);
@@ -173,7 +173,7 @@ public class ComprobanteService {
 
         //Por fecha de nacimiento
 
-        float descuentoPorCumple = restTemplate.getForObject("http://localhost:8079/tarifaEspecial/descuento/" + reserva.getCantidadCumple() + "/" + cantidadPersonas + "/" + tarifa, float.class);
+        float descuentoPorCumple = restTemplate.getForObject("http://gateway-server-service:8079/tarifaEspecial/descuento/" + reserva.getCantidadCumple() + "/" + cantidadPersonas + "/" + tarifa, float.class);
 
         montosDescuentos.add(montoInicial - descuentoPorCumple);
         descuentos.add(descuentoPorCumple);

@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db-service
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - image: postgres:13
+          name: postgres
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: POSTGRES_PASSWORD
+              value: "forojuegos"
+            - name: POSTGRES_DB
+              value: postgres
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts: # <-- AÑADIDO DE NUEVO PARA PERSISTENCIA
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
+            - name: init-db-scripts # <-- AÑADIDO DE NUEVO PARA SCRIPTS DE INIT
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes: # <-- AÑADIDO DE NUEVO PARA PERSISTENCIA Y SCRIPTS
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+        - name: init-db-scripts
+          configMap:
+            name: postgres-init-dbs-scripts # Nombre del ConfigMap con los scripts
+            defaultMode: 0755 # Permisos para scripts .sh
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/postgres-data"
+---
+# ConfigMap para los scripts de inicialización de las bases de datos
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-dbs-scripts # DEBE COINCIDIR CON EL VOLUMEN EN EL DEPLOYMENT
+data:
+  01-create-databases.sql: |    # Los archivos .sql o .sh aquí se ejecutarán al iniciar
+    CREATE DATABASE M1;
+    CREATE DATABASE M2;
+    CREATE DATABASE M3;
+    CREATE DATABASE M5;

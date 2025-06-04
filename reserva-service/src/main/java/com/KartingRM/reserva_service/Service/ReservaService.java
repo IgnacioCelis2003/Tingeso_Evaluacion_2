@@ -123,7 +123,7 @@ public class ReservaService {
 
         reservaRepository.save(reserva);
 
-        restTemplate.postForObject("http://localhost:8079/clienteFrecuente/register/" + rut + "/" + fechaInicioStr, null, void.class);
+        restTemplate.postForObject("http://gateway-server-service:8079/clienteFrecuente/register/" + rut + "/" + fechaInicioStr, null, void.class);
 
         // Crear el comprobante
         ComprobanteEntity comprobante = comprobanteService.crearComprobante(reserva.getId(), nombre + " " + apellidoPaterno + " " + apellidoMaterno);

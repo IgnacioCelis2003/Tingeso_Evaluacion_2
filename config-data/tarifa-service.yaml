@@ -2,14 +2,14 @@ server:
   port: 0
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/M1
-    username: postgres
+    url: ${SPRING_DATASOURCE_URL_M1}
+    username: ${SPRING_DATASOURCE_USERNAME}
     password: forojuegos
 eureka:
   instance:
-    hostname: localhost
+    preferIpAddress: true
   client:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka-server-service:8761/eureka/
