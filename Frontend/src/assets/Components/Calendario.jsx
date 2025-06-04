@@ -4,6 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import reservaService from "../Services/reserva.service";
+import rackService from "../Services/rack.service";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -65,7 +66,7 @@ export default function Calendario() {
 
   async function fetchReservas() {
     try {
-      const response = await reservaService.getReservas();
+      const response = await rackService.obtenerReservas();
       setReservas(response.data);
       const eventosTransformados = response.data.map(transformarReservaAEvento);
       setEventos(eventosTransformados);
