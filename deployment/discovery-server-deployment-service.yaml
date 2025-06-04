@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: discovery-server-deployment
+  name: eureka-server-deployment
   labels:
-    app: discovery-server-deployment
+    app: eureka-server-deployment
 spec:
   selector:
     matchLabels:
-      app: discovery-server-deployment
+      app: eureka-server-deployment
   replicas: 1
   template:
     metadata:
       labels:
-        app: discovery-server-deployment
+        app: eureka-server-deployment
     spec:
       containers:
-        - name: discovery-server
+        - name: eureka-server
           image: ignaciocelis2003/discovery-server:latest
           ports:
             - containerPort: 8761
@@ -23,12 +23,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: discovery-server-service
+  name: eureka-server-service
   labels:
-    app: discovery-server-service
+    app: eureka-server-service
 spec:
   selector:
-    app: discovery-server-deployment
+    app: eureka-server-deployment
   ports:
     - protocol: TCP
       port: 8761

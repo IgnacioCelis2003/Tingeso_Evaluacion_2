@@ -9,9 +9,9 @@ data:
 
   # URLs y usuario para las bases de datos
   # La contraseña la pondremos directamente en los Deployments como variable de entorno
-  SPRING_DATASOURCE_URL_M1: "jdbc:postgresql://postgres-db-service:5432/M1"
-  SPRING_DATASOURCE_URL_M2: "jdbc:postgresql://postgres-db-service:5432/M2"
-  SPRING_DATASOURCE_URL_M3: "jdbc:postgresql://postgres-db-service:5432/M3"
-  SPRING_DATASOURCE_URL_M5: "jdbc:postgresql://postgres-db-service:5432/M5"
+  SPRING_DATASOURCE_URL_M1: "jdbc:postgresql://postgres-db-service:5432/m1"
+  SPRING_DATASOURCE_URL_M2: "jdbc:postgresql://postgres-db-service:5432/m2"
+  SPRING_DATASOURCE_URL_M3: "jdbc:postgresql://postgres-db-service:5432/m3"
+  SPRING_DATASOURCE_URL_M5: "jdbc:postgresql://postgres-db-service:5432/m5"
 
   SPRING_DATASOURCE_USERNAME: "postgres"

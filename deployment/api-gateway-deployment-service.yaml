@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway-deployment
+  name: gateway-server-deployment
   labels:
-    app: api-gateway-deployment
+    app: gateway-server-deployment
 spec:
   selector:
     matchLabels:
-      app: api-gateway-deployment
+      app: gateway-server-deployment
   replicas: 1
   template:
     metadata:
       labels:
-        app: api-gateway-deployment
+        app: gateway-server-deployment
     spec:
       containers:
-        - name: api-gateway
+        - name: gateway-server
           image: ignaciocelis2003/api-gateway:latest
           ports:
             - containerPort: 8079
@@ -23,12 +23,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-gateway-service
+  name: gateway-server-service
   labels:
-    app: api-gateway-service
+    app: gateway-server-service
 spec:
   selector:
-    app: api-gateway-deployment
+    app: gateway-server-deployment
   ports:
     - protocol: TCP
       port: 8079

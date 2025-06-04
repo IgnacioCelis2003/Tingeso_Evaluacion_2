@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: reserva-service
-          image: ignaciocelis2003/reserva-service # ¡REEMPLAZA con tu imagen y tag correctos!
+          image: ignaciocelis2003/reserva-service:latest # ¡REEMPLAZA con tu imagen y tag correctos!
           # Si tu aplicación está configurada para server.port=0,
           # el puerto real será dinámico. Eureka lo descubrirá.
           # Puedes declarar un containerPort (ej. 8080, el default de Spring si no fuera 0)
