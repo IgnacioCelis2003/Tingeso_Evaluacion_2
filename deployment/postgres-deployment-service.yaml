@@ -35,13 +35,14 @@ spec:
           env:
             - name: POSTGRES_USER
               valueFrom:
-                configMapKeyRef:
-                  name: app-configmap
-                  key: SPRING_DATASOURCE_USERNAME
+                secretKeyRef: # <--- Cambio aquí
+                  name: postgres-secret # <--- Apunta a nuestro Secret
+                  key: POSTGRES_USER # <--- Usa la clave del Secret
             - name: POSTGRES_PASSWORD
-              value: "forojuegos"
-            - name: POSTGRES_DB
-              value: postgres
+              valueFrom:
+                secretKeyRef: # <--- Cambio aquí
+                  name: postgres-secret # <--- Apunta a nuestro Secret
+                  key: POSTGRES_PASSWORD # <--- Usa la clave del Secret
           ports:
             - containerPort: 5432
               name: postgres
